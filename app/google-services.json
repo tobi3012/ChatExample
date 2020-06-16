@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "377456836756",
+    "firebase_url": "https://applozic-example.firebaseio.com",
+    "project_id": "applozic-example",
+    "storage_bucket": "applozic-example.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377456836756:android:805923bce726c4f9d4b481",
+        "android_client_info": {
+          "package_name": "com.example.chatexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377456836756-pgap2sl3esc045jr5c4n1052ub9qr120.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chatexample",
+            "certificate_hash": "05a750c8df0d217d341d1d53a847f4a191d19fce"
+          }
+        },
+        {
+          "client_id": "377456836756-tlfombpj01gv8q7s8dbs9232qtdm7viu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeoglVpoe8omQpYb39hmYBAknFMN4X4pg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "377456836756-tlfombpj01gv8q7s8dbs9232qtdm7viu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
