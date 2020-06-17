@@ -23,6 +23,7 @@ import com.applozic.mobicomkit.listners.AlLoginHandler;
 import com.applozic.mobicomkit.listners.AlLogoutHandler;
 import com.applozic.mobicomkit.listners.AlPushNotificationHandler;
 import com.applozic.mobicomkit.uiwidgets.conversation.ConversationUIService;
+import com.applozic.mobicomkit.uiwidgets.conversation.activity.ConversationActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -37,33 +38,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Applozic.init(this, getString(R.string.application_key));
         ApplozicClient.getInstance(this).enableNotification();
-//        registerPushNoti();
-        if (!Applozic.isConnected(this)) {
-            registerUserChat("customer01", User.AuthenticationType.APPLOZIC);
-        }
         if (ApplozicClient.getInstance(getApplicationContext()).isContextBasedChat()) {
             Log.d(MainActivity.class.getSimpleName(), "onCreate: isContextBasedChat: true");
         } else {
             Log.d(MainActivity.class.getSimpleName(), "onCreate: isContextBasedChat: false");
             ApplozicClient.getInstance(getApplicationContext()).setContextBasedChat(true);
         }
-        getTokenFCM();
         Button buttonCus1 = findViewById(R.id.btn_cus1);
         Button buttonCus2 = findViewById(R.id.btn_cus2);
         Button btnLogout = findViewById(R.id.btn_logout);
-        intent = new Intent(this, com.applozic.mobicomkit.uiwidgets.conversation.activity.ConversationActivity.class);
-        intent2 = new Intent(this, com.applozic.mobicomkit.uiwidgets.conversation.activity.ConversationActivity.class);
+        Button chatList = findViewById(R.id.btn_chat);
+
+        chatList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent chatList = new Intent(MainActivity.this, ConversationActivity.class);
+                MainActivity.this.startActivity(chatList);
+            }
+        });
+
         buttonCus1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //logOutChat();
 
-                if (ApplozicClient.getInstance(getApplicationContext()).isContextBasedChat()) {
-                    intent.putExtra(ConversationUIService.CONTEXT_BASED_CHAT, true);
+                if (!Applozic.isConnected(MainActivity.this)) {
+                    registerUserChat("customer01", User.AuthenticationType.APPLOZIC);
+                } else {
+                    Toast.makeText(MainActivity.this, "Please click logout button and wait for logout !!! ", Toast.LENGTH_SHORT).show();
                 }
-                startActivity(intent);
 
             }
         });
@@ -72,12 +77,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //logOutChat();
-                registerUserChat("customer02", User.AuthenticationType.APPLOZIC);
-                if (ApplozicClient.getInstance(getApplicationContext()).isContextBasedChat()) {
-                    intent2.putExtra(ConversationUIService.CONTEXT_BASED_CHAT, true);
-                }
-                startActivity(intent2);
 
+                if (!Applozic.isConnected(MainActivity.this)) {
+                    registerUserChat("customer02", User.AuthenticationType.APPLOZIC);
+                } else {
+                    Toast.makeText(MainActivity.this, "Please click logout button and wait for logout !! ", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -110,25 +115,6 @@ public class MainActivity extends AppCompatActivity {
         });*/
     }
 
-    private void getTokenFCM() {
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(MainActivity.class.getSimpleName(), "getInstanceId failed", task.getException());
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-                        Log.d(MainActivity.class.getSimpleName(), "onComplete - Token: " + token);
-
-                        // Log and toast
-                    }
-                });
-    }
-
 
     private void registerUserChat(String userId, User.AuthenticationType authenticationType) {
 
@@ -147,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(MainActivity.class.getSimpleName(), "onSuccess: register account chat successful");
                 Toast.makeText(context, " register account chat successful", Toast.LENGTH_SHORT).show();
                 registerPushNoti();
+                Intent chatList = new Intent(MainActivity.this, ConversationActivity.class);
+                context.startActivity(chatList);
             }
 
             @Override
@@ -161,18 +149,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void registerPushNoti() {
         if (MobiComUserPreference.getInstance(this).isRegistered()) {
-            Applozic.registerForPushNotification(this, Applozic.getInstance(this).getDeviceRegistrationId(), new AlPushNotificationHandler() {
-                @Override
-                public void onSuccess(RegistrationResponse registrationResponse) {
-//                    registerUserChat("customer01", User.AuthenticationType.APPLOZIC);
-                    Log.d(MainActivity.class.getSimpleName(), "onSuccess: register noti success");
-                }
 
-                @Override
-                public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+            FirebaseInstanceId.getInstance().getInstanceId()
+                    .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                            if (!task.isSuccessful()) {
+                                Log.w(MainActivity.class.getSimpleName(), "getInstanceId failed", task.getException());
+                                return;
+                            }
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+                            Log.d(MainActivity.class.getSimpleName(), "onComplete - Token: " + token);
 
-                }
-            });
+                            Applozic.registerForPushNotification(MainActivity.this, token, new AlPushNotificationHandler() {
+                                @Override
+                                public void onSuccess(RegistrationResponse registrationResponse) {
+                                    Log.d(MainActivity.class.getSimpleName(), "onSuccess: register noti success");
+                                }
+
+                                @Override
+                                public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+
+                                }
+                            });
+
+                            // Log and toast
+                        }
+                    });
+
         }
     }
 
@@ -180,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         Applozic.logoutUser(this, new AlLogoutHandler() {
             @Override
             public void onSuccess(Context context) {
-                Toast.makeText(context, "logout successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "logout successful now you can login again", Toast.LENGTH_SHORT).show();
             }
 
             @Override

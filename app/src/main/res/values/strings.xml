@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ChatExample</string>
-    <string name="application_key">applozic-sample-app</string>
     <string name="msg_token_fmt">msg FCM</string>
 
 </resources>

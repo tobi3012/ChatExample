@@ -30,7 +30,7 @@
         To disable the location sharing via map add this line ApplozicSetting.getInstance(context).disableLocationSharingViaMap(); in onSuccess of Applozic UserLoginTask -->
 
         <meta-data android:name="com.package.name"
-            android:value="com.example.chatexample" /> <!-- NOTE: Do NOT change this, it should remain same i.e 'com.package.name' -->
+            android:value="${applicationId}" /> <!-- NOTE: Do NOT change this, it should remain same i.e 'com.package.name' -->
 
         <activity android:name="com.applozic.mobicomkit.uiwidgets.conversation.activity.ConversationActivity"
             android:configChanges="keyboardHidden|screenSize|smallestScreenSize|screenLayout|orientation"
@@ -46,7 +46,8 @@
         </activity>
 
         <service android:name="com.example.chatexample.FcmListenerService"
-            android:stopWithTask="false">
+            android:stopWithTask="false"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -54,5 +55,5 @@
     </application>
 
 
-c
+
 </manifest>
